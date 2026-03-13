@@ -4,6 +4,7 @@
    ======================================== */
 
 import type { DataSourceConfig, DataSourceStatus } from './types';
+import { API_BASE_URL, WS_URL } from './config';
 
 export class DataSource {
   private panelId: string;
@@ -23,7 +24,19 @@ export class DataSource {
     const stored = localStorage.getItem(`ds_config_${this.panelId}`);
     if (stored) {
       try {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored) as DataSourceConfig;
+        const migrated: DataSourceConfig = {
+          apiUrl: this.migrateLegacyUrl(parsed.apiUrl || '', 'api'),
+          pollInterval: parsed.pollInterval || 5,
+          wsUrl: this.migrateLegacyUrl(parsed.wsUrl || '', 'ws'),
+          dataPath: parsed.dataPath || ''
+        };
+
+        if (migrated.apiUrl !== (parsed.apiUrl || '') || migrated.wsUrl !== (parsed.wsUrl || '')) {
+          localStorage.setItem(`ds_config_${this.panelId}`, JSON.stringify(migrated));
+        }
+
+        return migrated;
       } catch (e) {
         // ignore parse errors
       }
@@ -34,6 +47,20 @@ export class DataSource {
       wsUrl: '',
       dataPath: ''
     };
+  }
+
+  private migrateLegacyUrl(url: string, kind: 'api' | 'ws'): string {
+    if (!url) return url;
+
+    if (kind === 'api' && /https?:\/\/localhost:5000/i.test(url)) {
+      return url.replace(/https?:\/\/localhost:5000/i, API_BASE_URL);
+    }
+
+    if (kind === 'ws' && /wss?:\/\/localhost:5000\/ws/i.test(url)) {
+      return url.replace(/wss?:\/\/localhost:5000\/ws/i, WS_URL);
+    }
+
+    return url;
   }
 
   public saveConfig(config: DataSourceConfig): void {

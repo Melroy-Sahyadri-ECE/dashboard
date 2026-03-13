@@ -1,4 +1,4 @@
-const normalizedApiBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace(/\/+$/, '');
+const normalizedApiBase = (import.meta.env.VITE_API_BASE_URL || 'https://dashboard-1tg9.onrender.com').replace(/\/+$/, '');
 
 const inferredWsBase = normalizedApiBase.startsWith('https://')
   ? normalizedApiBase.replace(/^https:\/\//, 'wss://')
