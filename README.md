@@ -5,9 +5,11 @@ A modern, dark-themed dashboard for real-time monitoring of railway track health
 ## Features
 
 ### 📍 Track Map
-- GPS-based track visualization
-- Color-coded pins (Green/Yellow/Red) based on verdict
-- Ready for Google Maps integration
+- GPS-based live bot visualization
+- Top section with Active Running / Stalled / Non-operational counters
+- Bot list table with status, source, and last-seen time
+- Filters by status, source (real/demo), and bot ID
+- Leaflet + OpenRailwayMap overlay for rail context
 - Real-time location tracking
 
 ### 📊 Health Profile
@@ -43,9 +45,27 @@ A modern, dark-themed dashboard for real-time monitoring of railway track health
 
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **Charts**: Chart.js
-- **Maps**: Placeholder for Google Maps API
+- **Maps**: Leaflet + OpenStreetMap + OpenRailwayMap
 - **Styling**: Custom CSS with dark theme
 - **Fonts**: Inter (Google Fonts)
+
+## Bot Telemetry (Track Map)
+
+Track Map accepts current bot positions (no history required) using either polling API or WebSocket.
+
+Expected fields (single object or array):
+
+- `bot_id` (or `botId`)
+- `lat` (or `latitude`)
+- `lng` (or `lon` / `longitude`)
+- `speed` (optional)
+- `heading` (optional)
+- `battery` (optional)
+- `timestamp` (optional; ISO string or epoch ms)
+
+Notes:
+- Real ESP bot should use ID `ESP32-REAL-001` to be highlighted uniquely on map.
+- Demo bots are shown automatically when no live endpoint is configured in Settings.
 
 ## Getting Started
 

@@ -39,6 +39,8 @@ function updateStatusUI(status: ESP32Status): void {
       }
     }
   }
+
+  window.dispatchEvent(new CustomEvent('esp32-status', { detail: status }));
 }
 
 function formatTimeAgo(ms: number): string {

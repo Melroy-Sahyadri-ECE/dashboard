@@ -341,6 +341,130 @@ body {
     overflow: hidden;
 }
 
+.track-ops-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 18px;
+}
+
+.track-ops-top {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.track-status-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.track-status-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+}
+
+.track-status-card p {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+}
+
+.track-status-card h3 {
+    font-size: 1.7rem;
+    line-height: 1;
+    font-weight: 800;
+}
+
+.track-filter-row {
+    display: grid;
+    grid-template-columns: 180px 180px 1fr;
+    gap: 12px;
+}
+
+.track-search-field {
+    min-width: 220px;
+}
+
+.track-botlist-wrap {
+    max-height: 220px;
+    overflow: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}
+
+.track-bot-table th,
+.track-bot-table td {
+    padding: 10px 14px;
+}
+
+.track-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 600;
+}
+
+.track-status-pill.active_running {
+    background: var(--color-green-bg);
+    color: var(--color-green);
+    border: 1px solid rgba(34, 197, 94, 0.22);
+}
+
+.track-status-pill.stalled {
+    background: var(--color-yellow-bg);
+    color: var(--color-yellow);
+    border: 1px solid rgba(234, 179, 8, 0.22);
+}
+
+.track-status-pill.non_operational {
+    background: var(--color-red-bg);
+    color: var(--color-red);
+    border: 1px solid rgba(239, 68, 68, 0.22);
+}
+
+.track-source-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border: 1px solid var(--border-color);
+}
+
+.track-source-pill.real {
+    color: var(--color-blue);
+    background: var(--color-blue-bg);
+}
+
+.track-source-pill.demo {
+    color: var(--text-secondary);
+    background: rgba(100, 116, 139, 0.15);
+}
+
+.track-real-bot-row {
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.track-ops-map .map-container {
+    height: 460px;
+    min-height: 320px;
+}
+
 /* Leaflet dark theme overrides */
 .leaflet-container {
     background: var(--bg-secondary) !important;
@@ -831,6 +955,27 @@ body {
 }
 
 @media (max-width: 640px) {
+    .track-status-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .track-filter-row {
+        grid-template-columns: 1fr;
+    }
+
+    .track-botlist-wrap {
+        max-height: 200px;
+    }
+
+    .track-ops-wrap {
+        padding: 14px;
+    }
+
+    .track-ops-map .map-container {
+        height: 340px;
+        min-height: 300px;
+    }
+
     .panel-header h1 {
         font-size: 1.4rem;
     }
