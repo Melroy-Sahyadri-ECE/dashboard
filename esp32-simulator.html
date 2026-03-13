@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Simulator - TrackBot Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.connected {
+            background: #10b981;
+        }
+
+        .status-dot.disconnected {
+            background: #ef4444;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .vibration-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-healthy {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-moderate {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-high {
+            background: #f97316;
+            color: white;
+        }
+
+        .btn-critical {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .slider-group {
+            margin-bottom: 15px;
+        }
+
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .log {
+            background: #1f2937;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+        }
+
+        .log-error {
+            color: #ef4444;
+        }
+
+        .log-success {
+            color: #10b981;
+        }
+
+        .log-info {
+            color: #60a5fa;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 ESP32 TrackBot Simulator</h1>
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="statusText">Disconnected</span>
+                </div>
+                <div class="status-item">
+                    <strong>Packets Sent:</strong> <span id="packetsSent">0</span>
+                </div>
+                <div class="status-item">
+                    <strong>Success Rate:</strong> <span id="successRate">0%</span>
+                </div>
+                <div class="status-item">
+                    <strong>Current Verdict:</strong> <span id="currentVerdict">HEALTHY</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>🎛️ Vibration Control</h2>
+                <div class="vibration-buttons">
+                    <button class="btn btn-healthy" onclick="setVibration('HEALTHY')">✓ Healthy</button>
+                    <button class="btn btn-moderate" onclick="setVibration('MODERATE')">⚠ Moderate</button>
+                    <button class="btn btn-high" onclick="setVibration('HIGH')">⚠⚠ High</button>
+                    <button class="btn btn-critical" onclick="setVibration('CRITICAL')">🚨 Critical</button>
+                </div>
+
+                <div class="slider-group" style="margin-top: 20px;">
+                    <label>
+                        <span>MPU Vibration</span>
+                        <span id="mpuValue">0.00</span>
+                    </label>
+                    <input type="range" class="slider" id="mpuSlider" min="0" max="100" value="0" step="1">
+                </div>
+
+                <div class="slider-group">
+                    <label>
+                        <span>SW420 Vibration</span>
+                        <span id="sw420Value">0.00</span>
+                    </label>
+                    <input type="range" class="slider" id="sw420Slider" min="0" max="100" value="0" step="1">
+                </div>
+
+                <div class="slider-group">
+                    <label>
+                        <span>Combined Score</span>
+                        <span id="combinedValue">0.00</span>
+                    </label>
+                    <input type="range" class="slider" id="combinedSlider" min="0" max="100" value="0" step="1">
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📍 GPS Simulation</h2>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="gpsEnabled" checked>
+                    <label for="gpsEnabled">GPS Enabled</label>
+                </div>
+
+                <div class="input-group">
+                    <label>Latitude (Default: Bangalore)</label>
+                    <input type="number" id="latitude" value="12.9716" step="0.0001">
+                </div>
+
+                <div class="input-group">
+                    <label>Longitude (Default: Bangalore)</label>
+                    <input type="number" id="longitude" value="77.5946" step="0.0001">
+                </div>
+
+                <div class="slider-group">
+                    <label>
+                        <span>Satellites</span>
+                        <span id="satellitesValue">8</span>
+                    </label>
+                    <input type="range" class="slider" id="satellitesSlider" min="0" max="20" value="8" step="1">
+                </div>
+
+                <div class="slider-group">
+                    <label>
+                        <span>Chainage (km)</span>
+                        <span id="chainageValue">0.0</span>
+                    </label>
+                    <input type="range" class="slider" id="chainageSlider" min="0" max="100" value="0" step="0.1">
+                </div>
+
+                <button class="btn btn-primary" onclick="randomizeGPS()">🚂 Randomize Indian Railway Location</button>
+            </div>
+
+            <div class="card">
+                <h2>⚙️ Configuration</h2>
+                <div class="input-group">
+                    <label>Server URL</label>
+                    <input type="text" id="serverUrl" value="  https://oralia-homonymic-funnily.ngrok-free.dev/api/health">
+                </div>
+
+                <div class="slider-group">
+                    <label>
+                        <span>Update Interval (ms)</span>
+                        <span id="intervalValue">2000</span>
+                    </label>
+                    <input type="range" class="slider" id="intervalSlider" min="500" max="10000" value="2000" step="500">
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="autoSend" checked>
+                    <label for="autoSend">Auto-send enabled</label>
+                </div>
+
+                <button class="btn btn-primary" onclick="sendData()">📤 Send Now</button>
+                <button class="btn btn-primary" onclick="clearLog()">🗑️ Clear Log</button>
+            </div>
+
+            <div class="card">
+                <h2>📊 Statistics</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Total Sent</div>
+                        <div class="stat-value" id="statTotal">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Successful</div>
+                        <div class="stat-value" id="statSuccess">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Failed</div>
+                        <div class="stat-value" id="statFailed">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Uptime</div>
+                        <div class="stat-value" id="statUptime">00:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📝 Console Log</h2>
+            <div class="log" id="logContainer">
+                <div class="log-entry log-info">[INFO] ESP32 Simulator initialized</div>
+                <div class="log-entry log-info">[INFO] Ready to send data to backend</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let stats = {
+            total: 0,
+            success: 0,
+            failed: 0,
+            startTime: Date.now()
+        };
+
+        let currentState = {
+            verdict: 'HEALTHY',
+            mpu: 0,
+            sw420: 0,
+            combined: 0,
+            latitude: 12.9716,
+            longitude: 77.5946,
+            satellites: 8,
+            chainage: 0
+        };
+
+        let sendInterval = null;
+
+        // Initialize
+        document.getElementById('mpuSlider').addEventListener('input', (e) => {
+            const val = (e.target.value / 100).toFixed(2);
+            document.getElementById('mpuValue').textContent = val;
+            currentState.mpu = parseFloat(val);
+            updateCombined();
+        });
+
+        document.getElementById('sw420Slider').addEventListener('input', (e) => {
+            const val = (e.target.value / 100).toFixed(2);
+            document.getElementById('sw420Value').textContent = val;
+            currentState.sw420 = parseFloat(val);
+            updateCombined();
+        });
+
+        document.getElementById('combinedSlider').addEventListener('input', (e) => {
+            const val = (e.target.value / 100).toFixed(2);
+            document.getElementById('combinedValue').textContent = val;
+            currentState.combined = parseFloat(val);
+        });
+
+        document.getElementById('satellitesSlider').addEventListener('input', (e) => {
+            document.getElementById('satellitesValue').textContent = e.target.value;
+            currentState.satellites = parseInt(e.target.value);
+        });
+
+        document.getElementById('chainageSlider').addEventListener('input', (e) => {
+            document.getElementById('chainageValue').textContent = parseFloat(e.target.value).toFixed(1);
+            currentState.chainage = parseFloat(e.target.value);
+        });
+
+        document.getElementById('intervalSlider').addEventListener('input', (e) => {
+            document.getElementById('intervalValue').textContent = e.target.value;
+            restartAutoSend();
+        });
+
+        document.getElementById('latitude').addEventListener('input', (e) => {
+            currentState.latitude = parseFloat(e.target.value) || 0;
+        });
+
+        document.getElementById('longitude').addEventListener('input', (e) => {
+            currentState.longitude = parseFloat(e.target.value) || 0;
+        });
+
+        document.getElementById('autoSend').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                startAutoSend();
+            } else {
+                stopAutoSend();
+            }
+        });
+
+        function updateCombined() {
+            const combined = Math.max(
+                currentState.mpu * 0.6 + currentState.sw420 * 0.4,
+                Math.max(currentState.mpu, currentState.sw420) * 0.8
+            );
+            currentState.combined = combined;
+            document.getElementById('combinedValue').textContent = combined.toFixed(2);
+            document.getElementById('combinedSlider').value = Math.round(combined * 100);
+            updateVerdict();
+        }
+
+        function updateVerdict() {
+            let verdict = 'HEALTHY';
+            if (currentState.combined >= 0.35) {
+                verdict = 'CRITICAL';
+            } else if (currentState.combined >= 0.15) {
+                verdict = 'HIGH';
+            } else if (currentState.combined >= 0.08) {
+                verdict = 'MODERATE';
+            }
+            currentState.verdict = verdict;
+            document.getElementById('currentVerdict').textContent = verdict;
+        }
+
+        function setVibration(level) {
+            let mpu, sw420;
+            switch(level) {
+                case 'HEALTHY':
+                    mpu = 0.02; sw420 = 0.01;
+                    break;
+                case 'MODERATE':
+                    mpu = 0.10; sw420 = 0.08;
+                    break;
+                case 'HIGH':
+                    mpu = 0.20; sw420 = 0.18;
+                    break;
+                case 'CRITICAL':
+                    mpu = 0.45; sw420 = 0.40;
+                    break;
+            }
+            
+            document.getElementById('mpuSlider').value = Math.round(mpu * 100);
+            document.getElementById('sw420Slider').value = Math.round(sw420 * 100);
+            document.getElementById('mpuValue').textContent = mpu.toFixed(2);
+            document.getElementById('sw420Value').textContent = sw420.toFixed(2);
+            
+            currentState.mpu = mpu;
+            currentState.sw420 = sw420;
+            updateCombined();
+            
+            addLog(`[ACTION] Set vibration to ${level}`, 'info');
+        }
+
+        function randomizeGPS() {
+            // Major Indian railway routes (latitude, longitude, city name)
+            const indianRailwayLocations = [
+                { lat: 28.6139, lng: 77.2090, city: 'New Delhi' },
+                { lat: 19.0760, lng: 72.8777, city: 'Mumbai' },
+                { lat: 12.9716, lng: 77.5946, city: 'Bangalore' },
+                { lat: 13.0827, lng: 80.2707, city: 'Chennai' },
+                { lat: 22.5726, lng: 88.3639, city: 'Kolkata' },
+                { lat: 17.3850, lng: 78.4867, city: 'Hyderabad' },
+                { lat: 23.0225, lng: 72.5714, city: 'Ahmedabad' },
+                { lat: 18.5204, lng: 73.8567, city: 'Pune' },
+                { lat: 26.9124, lng: 75.7873, city: 'Jaipur' },
+                { lat: 21.1702, lng: 72.8311, city: 'Surat' },
+                { lat: 11.0168, lng: 76.9558, city: 'Coimbatore' },
+                { lat: 15.3173, lng: 75.7139, city: 'Hubli' },
+                { lat: 25.5941, lng: 85.1376, city: 'Patna' },
+                { lat: 30.7333, lng: 76.7794, city: 'Chandigarh' }
+            ];
+            
+            // Pick a random location and add small variation for track segments
+            const location = indianRailwayLocations[Math.floor(Math.random() * indianRailwayLocations.length)];
+            const lat = location.lat + (Math.random() - 0.5) * 0.1; // ±5km variation
+            const lng = location.lng + (Math.random() - 0.5) * 0.1;
+            
+            document.getElementById('latitude').value = lat.toFixed(4);
+            document.getElementById('longitude').value = lng.toFixed(4);
+            currentState.latitude = lat;
+            currentState.longitude = lng;
+            
+            addLog(`[GPS] Randomized near ${location.city} (${lat.toFixed(4)}, ${lng.toFixed(4)})`, 'info');
+        }
+
+        function generateFFTMagnitudes() {
+            const magnitudes = [];
+            const combined = currentState.combined;
+            
+            for (let i = 0; i < 512; i++) {
+                const freq = (i * 8000.0) / 1024.0;
+                let magnitude = 0.001 + Math.random() * 0.005;
+                
+                // Add peaks based on frequency and vibration level
+                if (freq >= 40 && freq <= 60) {
+                    magnitude += combined * 0.5; // 50Hz peak
+                }
+                if (freq >= 90 && freq <= 110) {
+                    magnitude += combined * 0.3; // 100Hz peak
+                }
+                if (freq >= 150 && freq <= 250) {
+                    magnitude += combined * 0.4; // Track resonance
+                }
+                if (freq >= 1500 && freq <= 2000) {
+                    magnitude += combined * 0.6; // High frequency
+                }
+                
+                magnitudes.push(parseFloat(magnitude.toFixed(4)));
+            }
+            
+            return magnitudes;
+        }
+
+        async function sendData() {
+            const serverUrl = document.getElementById('serverUrl').value;
+            const gpsEnabled = document.getElementById('gpsEnabled').checked;
+            
+            // Create timestamp
+            const now = new Date();
+            const timestamp = now.toTimeString().split(' ')[0];
+            
+            // Build payload
+            const payload = {
+                verdict: currentState.verdict,
+                timestamp: timestamp,
+                gps: {
+                    latitude: gpsEnabled ? currentState.latitude : 0,
+                    longitude: gpsEnabled ? currentState.longitude : 0,
+                    satellites: gpsEnabled ? currentState.satellites : 0
+                },
+                features: {
+                    mpu: parseFloat(currentState.mpu.toFixed(3)),
+                    sw420: parseFloat(currentState.sw420.toFixed(3)),
+                    combined: parseFloat(currentState.combined.toFixed(3))
+                },
+                fftMagnitudes: generateFFTMagnitudes()
+            };
+            
+            try {
+                const response = await fetch(serverUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                stats.total++;
+                
+                if (response.ok) {
+                    stats.success++;
+                    updateStatus(true);
+                    addLog(`[✓] Data sent successfully (${response.status})`, 'success');
+                } else {
+                    stats.failed++;
+                    updateStatus(false);
+                    addLog(`[✗] Server error: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                stats.total++;
+                stats.failed++;
+                updateStatus(false);
+                addLog(`[✗] Network error: ${error.message}`, 'error');
+            }
+            
+            updateStats();
+        }
+
+        function updateStatus(connected) {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            if (connected) {
+                statusDot.classList.add('connected');
+                statusDot.classList.remove('disconnected');
+                statusText.textContent = 'Connected';
+            } else {
+                statusDot.classList.add('disconnected');
+                statusDot.classList.remove('connected');
+                statusText.textContent = 'Error';
+                setTimeout(() => {
+                    statusDot.classList.remove('disconnected');
+                    statusText.textContent = 'Ready';
+                }, 2000);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('packetsSent').textContent = stats.total;
+            document.getElementById('statTotal').textContent = stats.total;
+            document.getElementById('statSuccess').textContent = stats.success;
+            document.getElementById('statFailed').textContent = stats.failed;
+            
+            const successRate = stats.total > 0 
+                ? ((stats.success / stats.total) * 100).toFixed(1) 
+                : '0';
+            document.getElementById('successRate').textContent = successRate + '%';
+        }
+
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            
+            const time = new Date().toLocaleTimeString();
+            entry.textContent = `[${time}] ${message}`;
+            
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            // Keep only last 100 entries
+            while (logContainer.children.length > 100) {
+                logContainer.removeChild(logContainer.firstChild);
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('logContainer').innerHTML = '<div class="log-entry log-info">[INFO] Log cleared</div>';
+        }
+
+        function startAutoSend() {
+            const interval = parseInt(document.getElementById('intervalSlider').value);
+            sendInterval = setInterval(sendData, interval);
+            addLog(`[INFO] Auto-send started (${interval}ms interval)`, 'info');
+        }
+
+        function stopAutoSend() {
+            if (sendInterval) {
+                clearInterval(sendInterval);
+                sendInterval = null;
+                addLog('[INFO] Auto-send stopped', 'info');
+            }
+        }
+
+        function restartAutoSend() {
+            if (document.getElementById('autoSend').checked) {
+                stopAutoSend();
+                startAutoSend();
+            }
+        }
+
+        function updateUptime() {
+            const elapsed = Date.now() - stats.startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            document.getElementById('statUptime').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // Start auto-send on load
+        startAutoSend();
+        
+        // Update uptime every second
+        setInterval(updateUptime, 1000);
+        
+        addLog('[INFO] Simulator ready - Auto-send enabled', 'success');
+    </script>
+</body>
+</html>

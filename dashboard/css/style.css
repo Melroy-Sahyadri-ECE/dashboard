@@ -139,6 +139,79 @@ body {
     letter-spacing: -0.02em;
 }
 
+/* ESP32 Status Indicator */
+.esp32-status {
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.esp32-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.esp32-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-red);
+    box-shadow: 0 0 8px var(--color-red);
+    animation: pulse-red 2s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+.esp32-status-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.esp32-status.connected .esp32-status-dot {
+    background: var(--color-green);
+    box-shadow: 0 0 8px var(--color-green);
+    animation: pulse-green 2s ease-in-out infinite;
+}
+
+.esp32-status.connected .esp32-status-text {
+    color: var(--color-green);
+}
+
+.esp32-status.disconnected .esp32-status-dot {
+    background: var(--color-red);
+    box-shadow: 0 0 8px var(--color-red);
+    animation: pulse-red 2s ease-in-out infinite;
+}
+
+.esp32-status.disconnected .esp32-status-text {
+    color: var(--color-red);
+}
+
+@keyframes pulse-green {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(0.95);
+    }
+}
+
+@keyframes pulse-red {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(0.9);
+    }
+}
+
 .sidebar-nav {
     flex: 1;
     padding: 16px 12px;
@@ -508,6 +581,21 @@ body {
 
 .popup-content strong {
     color: var(--accent-primary);
+}
+
+/* Arrow Marker for Bot Movement */
+.arrow-marker {
+    background: transparent !important;
+    border: none !important;
+    z-index: 1000 !important;
+}
+
+.arrow-marker div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 /* ========================================
@@ -990,4 +1078,18 @@ body {
         height: 350px;
         min-height: 300px;
     }
+}
+
+/* ========================================
+   FFT Mode Toggle Button
+   ======================================== */
+#fft-mode-toggle:hover {
+    background: rgba(99, 102, 241, 0.2) !important;
+    border-color: rgba(99, 102, 241, 0.4) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+#fft-mode-toggle:active {
+    transform: translateY(0);
 }
