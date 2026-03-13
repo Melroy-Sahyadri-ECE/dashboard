@@ -5,6 +5,7 @@
 
 import { DataSource } from './datasource';
 import type { DataSourceStatus, EventData } from './types';
+import { API_BASE_URL } from './config';
 
 class EventsTablePanel {
   private ds: DataSource | null = null;
@@ -96,7 +97,7 @@ class EventsTablePanel {
     // Set default API endpoint
     if (!this.ds.isConfigured()) {
       this.ds.saveConfig({
-        apiUrl: 'http://localhost:5000/api/readings?limit=100',
+        apiUrl: `${API_BASE_URL}/api/readings?limit=100`,
         pollInterval: 2,
         wsUrl: '',
         dataPath: 'readings'

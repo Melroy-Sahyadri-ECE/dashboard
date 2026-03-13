@@ -7,6 +7,7 @@
 import { Chart, ChartConfiguration } from 'chart.js/auto';
 import { DataSource } from './datasource';
 import type { DataSourceStatus, FFTData } from './types';
+import { API_BASE_URL } from './config';
 
 interface FrequencyBands {
   low: number;    // 0-50 Hz
@@ -438,7 +439,7 @@ class LiveFFTPanel {
     // Set default API endpoint
     if (!this.ds.isConfigured()) {
       this.ds.saveConfig({
-        apiUrl: 'http://localhost:5000/api/readings/fft',
+          apiUrl: `${API_BASE_URL}/api/readings/fft`,
         pollInterval: 1,
         wsUrl: '',
         dataPath: ''

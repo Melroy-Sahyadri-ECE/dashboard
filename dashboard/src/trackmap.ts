@@ -6,6 +6,7 @@
 import L from 'leaflet';
 import { DataSource } from './datasource';
 import type { DataSourceStatus } from './types';
+import { API_BASE_URL } from './config';
 
 interface GPSReading {
   lat: number;
@@ -171,7 +172,7 @@ class TrackMapPanel {
     // Set default API endpoint
     if (!this.ds.isConfigured()) {
       this.ds.saveConfig({
-        apiUrl: 'http://localhost:5000/api/readings?limit=50',
+        apiUrl: `${API_BASE_URL}/api/readings?limit=50`,
         pollInterval: 2,
         wsUrl: '',
         dataPath: 'readings'

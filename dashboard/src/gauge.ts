@@ -6,6 +6,7 @@
 import { Chart, ChartConfiguration } from 'chart.js/auto';
 import { DataSource } from './datasource';
 import type { DataSourceStatus } from './types';
+import { API_BASE_URL } from './config';
 
 class GaugeProfilePanel {
   private chart: Chart | null = null;
@@ -145,7 +146,7 @@ class GaugeProfilePanel {
     // Set default API endpoint
     if (!this.ds.isConfigured()) {
       this.ds.saveConfig({
-        apiUrl: 'http://localhost:5000/api/readings?limit=50',
+        apiUrl: `${API_BASE_URL}/api/readings?limit=50`,
         pollInterval: 2,
         wsUrl: '',
         dataPath: 'readings'

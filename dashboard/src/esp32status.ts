@@ -3,8 +3,8 @@
    Displays real-time ESP32 connection status
    ======================================== */
 
-const API_BASE = 'http://localhost:5000';
-const WS_URL = 'ws://localhost:5000/ws';
+import { API_BASE_URL, WS_URL } from './config';
+
 const CHECK_INTERVAL = 3000; // Check status every 3 seconds
 
 let ws: WebSocket | null = null;
@@ -52,7 +52,7 @@ function formatTimeAgo(ms: number): string {
 
 async function checkStatus(): Promise<void> {
   try {
-    const response = await fetch(`${API_BASE}/api/esp32/status`);
+    const response = await fetch(`${API_BASE_URL}/api/esp32/status`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const status: ESP32Status = await response.json();
     updateStatusUI(status);

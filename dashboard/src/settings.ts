@@ -11,6 +11,7 @@ import { GaugeProfile } from './gauge';
 import { LiveFFT } from './fft';
 import { EventsTable } from './events';
 import { SummaryStats } from './summary';
+import { API_BASE_URL, WS_URL } from './config';
 
 interface PanelInfo {
   id: string;
@@ -97,7 +98,7 @@ function renderSettings(): void {
         <div class="settings-card-body">
           <div class="settings-field">
             <label for="cfg-${panel.id}-api">API Endpoint URL</label>
-            <input type="url" id="cfg-${panel.id}-api" placeholder="http://localhost:5000/api/readings" value="${cfg.apiUrl}">
+            <input type="url" id="cfg-${panel.id}-api" placeholder="${API_BASE_URL}/api/readings" value="${cfg.apiUrl}">
           </div>
           <div class="settings-field">
             <label for="cfg-${panel.id}-poll">Poll Interval (seconds)</label>
@@ -105,7 +106,7 @@ function renderSettings(): void {
           </div>
           <div class="settings-field">
             <label for="cfg-${panel.id}-ws">WebSocket URL (optional)</label>
-            <input type="url" id="cfg-${panel.id}-ws" placeholder="ws://localhost:5000/socket" value="${cfg.wsUrl}">
+            <input type="url" id="cfg-${panel.id}-ws" placeholder="${WS_URL}" value="${cfg.wsUrl}">
           </div>
           <div class="settings-field">
             <label for="cfg-${panel.id}-path">Data Path (JSON key path)</label>

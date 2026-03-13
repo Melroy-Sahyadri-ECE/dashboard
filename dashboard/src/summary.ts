@@ -6,6 +6,7 @@
 import { Chart, ChartConfiguration } from 'chart.js/auto';
 import { DataSource } from './datasource';
 import type { DataSourceStatus, SummaryData } from './types';
+import { API_BASE_URL } from './config';
 
 interface CardConfig {
   key: keyof SummaryData;
@@ -284,7 +285,7 @@ class SummaryStatsPanel {
     // Set default API endpoint
     if (!this.ds.isConfigured()) {
       this.ds.saveConfig({
-        apiUrl: 'http://localhost:5000/api/readings?limit=100',
+          apiUrl: `${API_BASE_URL}/api/readings?limit=100`,
         pollInterval: 2,
         wsUrl: '',
         dataPath: 'readings'
