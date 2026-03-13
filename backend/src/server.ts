@@ -84,6 +84,21 @@ function broadcast(data: any) {
 
 // Routes
 
+// Root endpoint
+app.get('/', (req: Request, res: Response) => {
+  res.json({
+    service: 'Railway Track Monitoring Backend',
+    status: 'ok',
+    health: '/health',
+    endpoints: {
+      esp32Data: '/api/esp32/data',
+      esp32Status: '/api/esp32/status',
+      readings: '/api/readings',
+      ws: '/ws'
+    }
+  });
+});
+
 // Health check
 app.get('/health', (req: Request, res: Response) => {
   res.json({ 
