@@ -139,6 +139,79 @@ body {
     letter-spacing: -0.02em;
 }
 
+/* ESP32 Status Indicator */
+.esp32-status {
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.esp32-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.esp32-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-red);
+    box-shadow: 0 0 8px var(--color-red);
+    animation: pulse-red 2s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+.esp32-status-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.esp32-status.connected .esp32-status-dot {
+    background: var(--color-green);
+    box-shadow: 0 0 8px var(--color-green);
+    animation: pulse-green 2s ease-in-out infinite;
+}
+
+.esp32-status.connected .esp32-status-text {
+    color: var(--color-green);
+}
+
+.esp32-status.disconnected .esp32-status-dot {
+    background: var(--color-red);
+    box-shadow: 0 0 8px var(--color-red);
+    animation: pulse-red 2s ease-in-out infinite;
+}
+
+.esp32-status.disconnected .esp32-status-text {
+    color: var(--color-red);
+}
+
+@keyframes pulse-green {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(0.95);
+    }
+}
+
+@keyframes pulse-red {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(0.9);
+    }
+}
+
 .sidebar-nav {
     flex: 1;
     padding: 16px 12px;
@@ -356,7 +429,7 @@ body {
 
 .track-status-cards {
     display: grid;
-    grid-template-columns: repeat(3, minmax(150px, 1fr));
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
     gap: 12px;
 }
 
@@ -381,6 +454,15 @@ body {
     font-weight: 800;
 }
 
+.track-alert-card {
+    border-color: rgba(239, 68, 68, 0.24);
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.12), rgba(17, 24, 39, 0.92));
+}
+
+.track-alert-card h3 {
+    color: var(--color-red);
+}
+
 .track-filter-row {
     display: grid;
     grid-template-columns: 180px 180px 1fr;
@@ -396,6 +478,94 @@ body {
     overflow: auto;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
+}
+
+.track-bottom-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
+    gap: 18px;
+}
+
+.track-bottom-card {
+    min-width: 0;
+}
+
+.track-alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 220px;
+    overflow: auto;
+}
+
+.track-alert-item {
+    border: 1px solid rgba(239, 68, 68, 0.16);
+    background: rgba(15, 23, 42, 0.86);
+    border-radius: var(--radius-md);
+    padding: 14px;
+}
+
+.track-alert-item.resolved {
+    border-color: rgba(34, 197, 94, 0.16);
+}
+
+.track-alert-item-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.track-alert-item-title {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.track-alert-item-meta {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    line-height: 1.55;
+}
+
+.track-alert-item-coords {
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+}
+
+.track-alert-item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.track-alert-focus {
+    appearance: none;
+    border: 1px solid rgba(239, 68, 68, 0.22);
+    background: rgba(239, 68, 68, 0.12);
+    color: #fecaca;
+    border-radius: 999px;
+    padding: 7px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.track-alert-focus:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.35);
+}
+
+.track-alert-empty {
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 18px;
+    color: var(--text-secondary);
+    text-align: center;
+    font-size: 0.88rem;
 }
 
 .track-bot-table th,
@@ -508,6 +678,30 @@ body {
 
 .popup-content strong {
     color: var(--accent-primary);
+}
+
+.popup-content.alert strong {
+    color: #fca5a5;
+}
+
+/* Arrow Marker for Bot Movement */
+.arrow-marker {
+    background: transparent !important;
+    border: none !important;
+    z-index: 1000 !important;
+}
+
+.animal-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+.arrow-marker div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 /* ========================================
@@ -959,6 +1153,10 @@ body {
         grid-template-columns: 1fr;
     }
 
+    .track-bottom-grid {
+        grid-template-columns: 1fr;
+    }
+
     .track-filter-row {
         grid-template-columns: 1fr;
     }
@@ -990,4 +1188,18 @@ body {
         height: 350px;
         min-height: 300px;
     }
+}
+
+/* ========================================
+   FFT Mode Toggle Button
+   ======================================== */
+#fft-mode-toggle:hover {
+    background: rgba(99, 102, 241, 0.2) !important;
+    border-color: rgba(99, 102, 241, 0.4) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+#fft-mode-toggle:active {
+    transform: translateY(0);
 }
